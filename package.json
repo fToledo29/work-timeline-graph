@@ -13,6 +13,7 @@
 	"dependencies": {
 	},
 	"scripts": {
+		"publish-package": "yarn build && npm pack && npm publish",
 		"build": "webpack"
 	},
 	"peerDependencies": {
