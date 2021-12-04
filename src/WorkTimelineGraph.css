@@ -1,0 +1,58 @@
+g.type-TK > rect {
+  fill: #00ffd0;
+  
+}
+
+g.node > rect {
+    fill: #63e6f787;
+}
+
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  stroke: #fff;
+}
+
+.node rect {
+  stroke: #999;
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+
+.edgePath path {
+  stroke: #0acaf5;
+  stroke-width: 1.5px;
+}
+
+#wkfsvg, #nodeTree, .node {
+    border: 1px solid #ccc;
+    overflow: auto;
+}
+
+.container {
+	height: 60%;
+	width: 80%;
+	border: 1px solid #ccc;
+	display: flex;
+    	justify-content: center;
+	overflow: hidden;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+button[class^='zoom_'] {
+	width: 4rem;
+	height: 3rem;
+	font-size: 2em;
+}
+
+.reset  {
+	width: 4rem;
+	height: 3rem;
+	font-size: 1em;
+}
+
+.zoom_buttons {
+	display: flex;
+}
