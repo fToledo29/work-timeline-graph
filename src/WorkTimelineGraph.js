@@ -4,25 +4,32 @@ import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import './WorkTimelineGraph.css';
 
-class WorkTimelineGraph extends React.Component {
+class WorkTimelineComponent extends React.Component {
 
 	constructor(props) {
 		super(props);
+		const { nodes, edges, nodeFontStroke, nodeFill } = props;
 		this.svgContainer = React.createRef();
 		this.ge = React.createRef();
 		this.createGraph.bind(this);
 		this.containerdiv = React.createRef();
+		this.nodes = nodes;
+		this.edges = edges;
+		this.nodeFontStroke = nodeFontStroke;
+		this.nodeFill = nodeFill;
 	}
 
 	static get propTypes() {
 		return {
-			nodes: PropTypes.any,
-			edges: PropTypes.any
+			nodes: PropTypes.array,
+			edges: PropTypes.array,
+			nodeFontStroke: PropTypes.string,
+			nodeFill: PropTypes.string,
 		};
 	}
 
 	componentDidMount() {
-		this.createGraph(this.props.nodes, this.props.edges);
+		this.createGraph(this.nodes, this.edges);
 	}
 
 
@@ -84,6 +91,8 @@ class WorkTimelineGraph extends React.Component {
 
 		this.addLinksToNodes(svg, routes);
 
+		this.setBackground(svg);
+
 		const { height: gHeight, width: gWidth } = g.graph();
 		const elem = d3.select(this.svgContainer.current);
 		const width = elem.node().offsetWidth;
@@ -115,8 +124,20 @@ class WorkTimelineGraph extends React.Component {
 		}
 		edge_link.setAttribute('target', '_blank');
 		edge_link.textContent = content;
-		edge_link.style.stroke = '#fff';
+		edge_link.style.stroke = this.nodeFontStroke;
 		return edge_link;
+	}
+
+	setBackground(svg) {
+
+		const rect = svg.selectAll('.node rect');
+
+		rect.nodes().forEach(el => {
+
+			el.style.fill = this.nodeFill;
+
+		});
+
 	}
 
 	addLinksToNodes(svg, routes) {
@@ -142,5 +163,21 @@ class WorkTimelineGraph extends React.Component {
 		);
 	}
 }
+
+const WorkTimelineGraph = ({ nodes, edges, nodeFontStroke, nodeFill }) => {
+	return <WorkTimelineComponent
+		nodes={nodes}
+		edges={edges}
+		nodeFontStroke={nodeFontStroke}
+		nodeFill={nodeFill}
+	/>;
+};
+
+WorkTimelineGraph.propTypes = {
+	edges: PropTypes.array,
+	nodes: PropTypes.array,
+	nodeFontStroke: PropTypes.string,
+	nodeFill: PropTypes.string,
+};
 
 export default WorkTimelineGraph;
