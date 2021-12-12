@@ -115,12 +115,38 @@ class WorkTimelineComponent extends React.Component {
 		return edge_tspan;
 	}
 
+	isValidLink(link = '') {
+		const [h, t, t2 , p ] = link.toLowerCase().split('');
+		return ([h, t, t2 , p].join('') !== 'http');
+	}
+
+	getOnlyLinks(link = '') {
+		return link.toLowerCase().replace(/javascript/, '');
+	}
+
 	getEdgeLink(routeOrigin, routeDestination, content) {
 		const edge_link = document.createElementNS('http://www.w3.org/2000/svg', 'a');
 		if (routeOrigin && routeOrigin.origin.link) {
-			edge_link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', routeOrigin.origin.link);
+
+			if (this.isValidLink(routeOrigin.origin.link)) {
+				console.warn('Make sure to pass only HTTP/HTTPS URLs if you want your nodes to have links! 🚨');
+				return edge_link;
+			}
+			
+			const href = this.getOnlyLinks(routeOrigin.origin.link);
+
+			edge_link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
+
 		} else if (routeDestination && routeDestination.origin.link) {
-			edge_link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', routeDestination.destination.link);
+
+			if (this.isValidLink(routeDestination.destination.link)) {
+				console.warn('Make sure to pass only HTTP/HTTPS URLs if you want your nodes to have links! 🚨');
+				return edge_link;
+			}
+			
+			const href = this.getOnlyLinks(routeDestination.destination.link);
+
+			edge_link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
 		}
 		edge_link.setAttribute('target', '_blank');
 		edge_link.textContent = content;
