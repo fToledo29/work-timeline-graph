@@ -23,6 +23,21 @@ const nodes = [
 	'Wipro',
 ];
 
+/*
+// Edge Object Desc.
+	{
+		destination: {
+			name: string, // Node Label
+			link: string // HTTP URL
+		},
+		origin: {
+			name: string, // Node Label
+			link: string // HTTP URL
+		},
+		weight: string, /// The label located over the connection between nodes
+	},
+*/
+
 const edges = [
 	{
 		destination: {name: 'Perifel', link: 'https://www.softwareone.com/'},
@@ -48,7 +63,14 @@ const edges = [
 
 const YourComponent = () => {
 	return (
-		<WorkTimelineGraph nodes={nodes} edges={edges} />
+		<WorkTimelineGraph 
+			nodes={nodes}
+			edges={edges}
+			nodeFill= '#63e6f787' // Node's background color
+			nodeFontStroke='#ffffff' // Node's Font color
+			weightStroke='#ececec' // Node's connection Font color
+			pathStroke='#000000' // Node's connection color (Arrow)
+		/>
 	)
 }
 

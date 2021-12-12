@@ -3,12 +3,13 @@ import React from 'react';
 import * as d3 from 'd3';
 import dagreD3 from 'dagre-d3';
 import './WorkTimelineGraph.css';
+import { WTLElementHandler } from './shared/WTLElementHandler';
 
 class WorkTimelineComponent extends React.Component {
 
 	constructor(props) {
 		super(props);
-		const { nodes, edges, nodeFontStroke, nodeFill } = props;
+		const { nodes, edges, nodeFontStroke, nodeFill, weightStroke, pathStroke } = props;
 		this.svgContainer = React.createRef();
 		this.ge = React.createRef();
 		this.createGraph.bind(this);
@@ -16,6 +17,9 @@ class WorkTimelineComponent extends React.Component {
 		this.nodes = nodes;
 		this.edges = edges;
 		this.nodeFontStroke = nodeFontStroke;
+		this.weightStroke = weightStroke;
+		this.pathStroke = pathStroke;
+
 		this.nodeFill = nodeFill;
 	}
 
@@ -25,6 +29,8 @@ class WorkTimelineComponent extends React.Component {
 			edges: PropTypes.array,
 			nodeFontStroke: PropTypes.string,
 			nodeFill: PropTypes.string,
+			weightStroke: PropTypes.string,
+			pathStroke: PropTypes.string,
 		};
 	}
 
@@ -66,11 +72,9 @@ class WorkTimelineComponent extends React.Component {
 				return;
 			}
 			let svg_edge_label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-			let edge_tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-			edge_tspan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space', 'preserve');
-			edge_tspan.setAttribute('dy', '1em');
-			edge_tspan.setAttribute('x', '1');
+			let edge_tspan = WTLElementHandler.getEdgeTspan();
 			edge_tspan.textContent = route.weight;
+			edge_tspan.style.stroke = this.weightStroke ? this.weightStroke : '';
 			svg_edge_label.appendChild(edge_tspan);
 			g.setEdge(route.origin.name, route.destination.name, { labelType: 'svg', label: svg_edge_label });
 
@@ -89,97 +93,14 @@ class WorkTimelineComponent extends React.Component {
 
 		render(svg, g);
 
-		this.addLinksToNodes(svg, routes);
+		WTLElementHandler.addLinksToNodes(svg, routes, this.nodeFontStroke);
 
-		this.setBackground(svg);
+		WTLElementHandler.setBackground(svg, this.nodeFill);
 
-		const { height: gHeight, width: gWidth } = g.graph();
-		const elem = d3.select(this.svgContainer.current);
-		const width = elem.node().offsetWidth;
-		const height = elem.node().offsetHeight;
-		const transX = width - gWidth;
-		const transY = height - gHeight;
-		svg.attr('viewBox', `0 0 ${width} ${height}`);
-		const transformX = transX / 2;
-		const transformY = transY / 2;
-		d3.select('.output').attr('transform', d3.zoomIdentity.translate(transformX, transformY));
+		WTLElementHandler.setEdgePathStroke(svg, this.pathStroke);
 
+		WTLElementHandler.translateOutput(svg, d3, g, this.svgContainer.current);
 
-	}
-
-	getEdgeTspan() {
-		const edge_tspan = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
-		edge_tspan.setAttributeNS('http://www.w3.org/XML/1998/namespace', 'xml:space', 'preserve');
-		edge_tspan.setAttribute('dy', '1em');
-		edge_tspan.setAttribute('x', '1');
-		return edge_tspan;
-	}
-
-	isValidLink(link = '') {
-		const [h, t, t2 , p ] = link.toLowerCase().split('');
-		return ([h, t, t2 , p].join('') !== 'http');
-	}
-
-	getOnlyLinks(link = '') {
-		return link.toLowerCase().replace(/javascript/, '');
-	}
-
-	getEdgeLink(routeOrigin, routeDestination, content) {
-		const edge_link = document.createElementNS('http://www.w3.org/2000/svg', 'a');
-		if (routeOrigin && routeOrigin.origin.link) {
-
-			if (this.isValidLink(routeOrigin.origin.link)) {
-				console.warn('Make sure to pass only HTTP/HTTPS URLs if you want your nodes to have links! 🚨');
-				return edge_link;
-			}
-			
-			const href = this.getOnlyLinks(routeOrigin.origin.link);
-
-			edge_link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
-
-		} else if (routeDestination && routeDestination.origin.link) {
-
-			if (this.isValidLink(routeDestination.destination.link)) {
-				console.warn('Make sure to pass only HTTP/HTTPS URLs if you want your nodes to have links! 🚨');
-				return edge_link;
-			}
-			
-			const href = this.getOnlyLinks(routeDestination.destination.link);
-
-			edge_link.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
-		}
-		edge_link.setAttribute('target', '_blank');
-		edge_link.textContent = content;
-		edge_link.style.stroke = this.nodeFontStroke;
-		return edge_link;
-	}
-
-	setBackground(svg) {
-
-		const rect = svg.selectAll('.node rect');
-
-		rect.nodes().forEach(el => {
-
-			el.style.fill = this.nodeFill;
-
-		});
-
-	}
-
-	addLinksToNodes(svg, routes) {
-
-		const text = svg.selectAll('.node text');
-
-		text.nodes().forEach(el => {
-			const content = el.textContent;
-			const routeOrigin = routes.find((node) => node.origin.name === content);
-			const routeDestination = routes.find((node) => node.destination.name === content);
-			el.innerHTML = '';
-			let edge_tspan = this.getEdgeTspan();
-			let edge_link = this.getEdgeLink(routeOrigin, routeDestination, content);
-			edge_tspan.appendChild(edge_link);
-			el.appendChild(edge_tspan);
-		});
 	}
 
 	render() {
@@ -190,12 +111,21 @@ class WorkTimelineComponent extends React.Component {
 	}
 }
 
-const WorkTimelineGraph = ({ nodes, edges, nodeFontStroke, nodeFill }) => {
+const WorkTimelineGraph = ({
+	nodes,
+	edges,
+	nodeFontStroke,
+	nodeFill,
+	weightStroke,
+	pathStroke
+}) => {
 	return <WorkTimelineComponent
 		nodes={nodes}
 		edges={edges}
 		nodeFontStroke={nodeFontStroke}
 		nodeFill={nodeFill}
+		weightStroke={weightStroke}
+		pathStroke={pathStroke}
 	/>;
 };
 
@@ -204,6 +134,8 @@ WorkTimelineGraph.propTypes = {
 	nodes: PropTypes.array,
 	nodeFontStroke: PropTypes.string,
 	nodeFill: PropTypes.string,
+	weightStroke: PropTypes.string,
+	pathStroke: PropTypes.string,
 };
 
 export default WorkTimelineGraph;
