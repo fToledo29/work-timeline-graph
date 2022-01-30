@@ -1,5 +1,5 @@
 {
-	"name": "work-timeline-graph",
+	"name": "@ftoledo29/work-timeline-graph",
 	"version": "0.0.12",
 	"description": "This library creates a series of nodes based on the given parameters, it creates and draws nodes in a graph data structure fashion.",
 	"main": "./lib/WorkTimelineGraph.js",
@@ -39,5 +39,8 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/fToledo29/work-timeline-graph.git"
+	},
+	"publishConfig": {
+		"@ftoledo29:registry": "https://npm.pkg.github.com"
 	}
 }
