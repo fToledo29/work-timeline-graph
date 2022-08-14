@@ -34,6 +34,18 @@ export class WTLHelper {
 
 	}
 
+	static 	setNodeStroke(svg, nodeStroke = '') {
+
+		const rect = svg.selectAll('.node rect');
+
+		rect.nodes().forEach(el => {
+
+			el.style.stroke = nodeStroke ? nodeStroke : el.style.stroke;
+
+		});
+
+	}
+
 	static showInvalidLinkWarning() {
 		console.warn(WTLConstans.messages.INVALID_LINK);
 	}

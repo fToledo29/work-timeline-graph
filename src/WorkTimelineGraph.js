@@ -9,7 +9,7 @@ class WorkTimelineComponent extends React.Component {
 
 	constructor(props) {
 		super(props);
-		const { nodes, edges, nodeFontStroke, nodeFill, weightStroke, pathStroke } = props;
+		const { nodes, edges, nodeFontStroke, nodeFill, nodeStroke, weightStroke, pathStroke } = props;
 		this.svgContainer = React.createRef();
 		this.ge = React.createRef();
 		this.createGraph.bind(this);
@@ -21,6 +21,7 @@ class WorkTimelineComponent extends React.Component {
 		this.pathStroke = pathStroke;
 
 		this.nodeFill = nodeFill;
+		this.nodeStroke = nodeStroke;
 	}
 
 	static get propTypes() {
@@ -29,6 +30,7 @@ class WorkTimelineComponent extends React.Component {
 			edges: PropTypes.array,
 			nodeFontStroke: PropTypes.string,
 			nodeFill: PropTypes.string,
+			nodeStroke: PropTypes.string,
 			weightStroke: PropTypes.string,
 			pathStroke: PropTypes.string,
 		};
@@ -97,6 +99,8 @@ class WorkTimelineComponent extends React.Component {
 
 		WTLElementHandler.setBackground(svg, this.nodeFill);
 
+		WTLElementHandler.setNodeStroke(svg, this.nodeStroke);
+
 		WTLElementHandler.setEdgePathStroke(svg, this.pathStroke);
 
 		WTLElementHandler.translateOutput(svg, d3, g, this.svgContainer.current);
@@ -116,6 +120,7 @@ const WorkTimelineGraph = ({
 	edges,
 	nodeFontStroke,
 	nodeFill,
+	nodeStroke,
 	weightStroke,
 	pathStroke
 }) => {
@@ -124,6 +129,7 @@ const WorkTimelineGraph = ({
 		edges={edges}
 		nodeFontStroke={nodeFontStroke}
 		nodeFill={nodeFill}
+		nodeStroke={nodeStroke}
 		weightStroke={weightStroke}
 		pathStroke={pathStroke}
 	/>;
@@ -134,6 +140,7 @@ WorkTimelineGraph.propTypes = {
 	nodes: PropTypes.array,
 	nodeFontStroke: PropTypes.string,
 	nodeFill: PropTypes.string,
+	nodeStroke: PropTypes.string,
 	weightStroke: PropTypes.string,
 	pathStroke: PropTypes.string,
 };
