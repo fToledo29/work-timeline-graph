@@ -1,6 +1,6 @@
 {
 	"name": "@ftoledo29/work-timeline-graph",
-	"version": "0.0.12",
+	"version": "0.0.13",
 	"description": "This library creates a series of nodes based on the given parameters, it creates and draws nodes in a graph data structure fashion.",
 	"main": "./lib/WorkTimelineGraph.js",
 	"license": "MIT",
